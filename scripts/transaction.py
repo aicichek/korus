@@ -28,6 +28,7 @@ def process_transaction_data():
             ~df_transaction['quantity'].astype(str).str.replace('.', '', 1).str.isdigit() |
             ~df_transaction['price'].astype(str).str.replace('.', '', 1).str.isdigit() |
             ~df_transaction['price_full'].astype(str).str.replace('.', '', 1).str.isdigit() |
+            df_transaction['pos'].isna() |
             ~df_transaction['product_id'].astype(str).str.isdigit()
         ]
     ])
@@ -47,13 +48,14 @@ def process_transaction_data():
         df_transaction['price'].astype(str).str.replace('.', '', 1).str.isdigit() &
         df_transaction['price_full'].astype(str).str.replace('.', '', 1).str.isdigit() &
         df_transaction['product_id'].astype(str).str.isdigit() &
+        df_transaction['pos'].notna() &
         df_transaction['product_id'].isin(existing_product_ids)
     ]
-
+    # df_transaction = df_transaction[df_transaction['pos'].notna()]
     # Записываем данные в таблицу transaction на схему dds
     df_transaction.to_sql('transaction', engine_9_db, schema='dds', if_exists='append', index=False)
 
-    # Записываем данные с дубликатами transaction_id в таблицу damaged_data на схему damaged_data
+    # Записываем данные на схему damaged_data
     df_damaged_data.to_sql('transaction', engine_9_db, schema='damaged_data', if_exists='append', index=False)
 
 

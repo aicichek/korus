@@ -27,7 +27,7 @@ def process_product_data():
         ~df_product['category_id'].isin(valid_category_ids) |
         df_product.duplicated(subset=['name_short', 'brand_id'], keep=False)
     ]
-
+    df_product['brand_id'] = df_product['brand_id'].astype(float).astype(int)
     # Удаляем строки с некорректными данными из основной таблицы
     df_product = df_product[
         df_product['product_id'].astype(str).str.isdigit() &
@@ -46,16 +46,15 @@ def process_product_data():
 
 def get_brand_ids():
     # Загружаем данные из таблицы brand в DataFrame
-    query = "SELECT brand_id FROM sources.brand"
-    df_brand = pd.read_sql_query(query, engine_sources)
-    return df_brand['brand_id'].tolist()
-
+    query = "SELECT * FROM dds.brand"
+    df_brand = pd.read_sql_query(query, engine_9_db, index_col="brand_id")
+    return df_brand.index.values
 
 def get_category_ids():
     # Загружаем данные из таблицы category в DataFrame
-    query = "SELECT category_id FROM sources.category"
-    df_category = pd.read_sql_query(query, engine_sources)
-    return df_category['category_id'].tolist()
+    query = "SELECT * FROM dds.category"
+    df_category = pd.read_sql_query(query, engine_9_db, index_col="category_id")
+    return df_category.index.values
 
 
 if __name__ == "__main__":

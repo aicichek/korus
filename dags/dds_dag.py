@@ -64,4 +64,10 @@ fill_stock = BashOperator(
     dag=dag
 )
 
-fill_brand >> fill_category >> fill_product >> fill_store >> fill_transaction >> fill_stock
+trigger_Datamart = TriggerDagRunOperator(
+    task_id='trigger_Datamart',
+    trigger_dag_id='DATAMART_create',
+    dag=dag
+)
+
+fill_brand >> fill_category >> fill_product >> fill_store >> fill_transaction >> fill_stock >> trigger_Datamart
